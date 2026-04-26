@@ -1,0 +1,17 @@
+# Build outputs
+**/build/
+**/.gradle/
+
+# IDE
+.idea/
+*.iml
+
+# Local config & secrets
+local.properties
+*.keystore
+*.jks
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
