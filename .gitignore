@@ -1,0 +1,17 @@
+*.iml
+.gradle
+/local.properties
+/.idea/
+.DS_Store
+/build
+**/build/
+/captures
+.externalNativeBuild
+.cxx
+*.keystore
+!debug.keystore
+
+# Secrets — never commit
+gradle.properties
+google-services.json
+firebase-admin.json
