@@ -1,0 +1,10 @@
+org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m
+android.useAndroidX=true
+kotlin.code.style=official
+android.nonTransitiveRClass=true
+
+# Release signing — fill in real values locally; do not commit
+MONKEYBYTES_UPLOAD_STORE_FILE=monkeybytes-release.keystore
+MONKEYBYTES_UPLOAD_KEY_ALIAS=monkeybytes
+MONKEYBYTES_UPLOAD_STORE_PASSWORD=CHANGEME
+MONKEYBYTES_UPLOAD_KEY_PASSWORD=CHANGEME

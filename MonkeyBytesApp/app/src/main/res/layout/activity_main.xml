@@ -22,8 +22,8 @@
             android:layout_marginBottom="32dp">
 
             <ImageView
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:src="@mipmap/ic_launcher"
                 android:contentDescription="@null"/>
 
@@ -84,10 +84,17 @@
                 android:gravity="center_vertical"
                 android:padding="18dp">
 
-                <View
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="#1A73E8"/>
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_dashboard">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_dashboard"
+                        android:contentDescription="@null"/>
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -143,10 +150,17 @@
                 android:gravity="center_vertical"
                 android:padding="18dp">
 
-                <View
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="#5865F2"/>
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_discord">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_discord"
+                        android:contentDescription="@null"/>
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -202,10 +216,17 @@
                 android:gravity="center_vertical"
                 android:padding="18dp">
 
-                <View
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="#34A853"/>
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_status">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_status"
+                        android:contentDescription="@null"/>
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
