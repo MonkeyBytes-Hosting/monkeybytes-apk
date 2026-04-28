@@ -1,0 +1,55 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Blue field -->
+    <path
+        android:fillColor="#012169"
+        android:pathData="M0,0 L108,0 L108,108 L0,108 Z" />
+
+    <!-- White saltire (St Andrew) - proper thickness diagonals -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="18"
+        android:pathData="M0,0 L108,108" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="18"
+        android:pathData="M108,0 L0,108" />
+
+    <!-- Red saltire (St Patrick) - thin, offset counter-clockwise of white -->
+    <path
+        android:strokeColor="#C8102E"
+        android:strokeWidth="6"
+        android:pathData="M-3,3 L105,111" />
+    <path
+        android:strokeColor="#C8102E"
+        android:strokeWidth="6"
+        android:pathData="M3,-3 L111,105" />
+    <path
+        android:strokeColor="#C8102E"
+        android:strokeWidth="6"
+        android:pathData="M111,3 L3,111" />
+    <path
+        android:strokeColor="#C8102E"
+        android:strokeWidth="6"
+        android:pathData="M105,-3 L-3,105" />
+
+    <!-- White cross (St George) base — narrower so saltires dominate -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,0 L64,0 L64,108 L44,108 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M0,44 L108,44 L108,64 L0,64 Z" />
+
+    <!-- Red cross (St George) — thin -->
+    <path
+        android:fillColor="#C8102E"
+        android:pathData="M48,0 L60,0 L60,108 L48,108 Z" />
+    <path
+        android:fillColor="#C8102E"
+        android:pathData="M0,48 L108,48 L108,60 L0,60 Z" />
+</vector>
