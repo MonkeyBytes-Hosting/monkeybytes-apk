@@ -15,6 +15,11 @@ class AuthActivity : AppCompatActivity() {
         if (!key.isNullOrBlank()) {
             AppPrefs.setApiToken(applicationContext, key)
             registerFcmToken()
+            startActivity(Intent(this, DashboardActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            })
+            finish()
+            return
         }
         startActivity(Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
