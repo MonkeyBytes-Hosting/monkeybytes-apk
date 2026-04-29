@@ -11,8 +11,8 @@ android {
         applicationId = "com.monkeybytes.app"
         minSdk = 23
         targetSdk = 36
-        versionCode = 8
-        versionName = "0.0.8-alpha"
+        versionCode = 11
+        versionName = "0.11.6-alpha"
     }
 
     signingConfigs {

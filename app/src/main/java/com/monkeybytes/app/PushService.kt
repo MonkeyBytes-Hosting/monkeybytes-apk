@@ -41,13 +41,8 @@ class PushService : FirebaseMessagingService() {
             nm.createNotificationChannel(ch)
         }
 
-        val targetUrl = if (!serverUuid.isNullOrBlank())
-            "https://dash.monkey-network.xyz/server/$serverUuid"
-        else
-            "https://dash.monkey-network.xyz/"
-
-        val openIntent = Intent(this, WebViewActivity::class.java).apply {
-            putExtra("url", targetUrl)
+        val openIntent = Intent(this, DashboardActivity::class.java).apply {
+            if (!serverUuid.isNullOrBlank()) putExtra("server_uuid", serverUuid)
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         }
         val pi = PendingIntent.getActivity(

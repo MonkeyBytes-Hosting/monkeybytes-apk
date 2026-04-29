@@ -11,7 +11,7 @@
 *.keystore
 !debug.keystore
 
-# Secrets — never commit
+# Secrets - never commit
 gradle.properties
 google-services.json
 firebase-admin.json
