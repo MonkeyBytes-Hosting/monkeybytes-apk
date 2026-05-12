@@ -35,6 +35,11 @@
             android:configChanges="orientation|screenSize|keyboardHidden"/>
 
         <activity
+            android:name=".RunnerGameActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
+
+        <activity
             android:name=".AuthActivity"
             android:exported="true"
             android:launchMode="singleTask"

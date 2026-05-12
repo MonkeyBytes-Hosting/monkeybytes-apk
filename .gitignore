@@ -8,6 +8,8 @@
 /captures
 .externalNativeBuild
 .cxx
+.kotlin
+/app/release/
 *.keystore
 !debug.keystore
 

@@ -45,9 +45,74 @@ object PanelApi {
         val uptimeMillis: Long,
     )
 
+    data class ConsoleWebsocket(
+        val socket: String,
+        val token: String,
+    )
+
+    data class StartupVariable(
+        val name: String,
+        val envVariable: String,
+        val value: String,
+    )
+
+    data class StartupInfo(
+        val startupCommand: String,
+        val rawStartupCommand: String,
+        val variables: List<StartupVariable>,
+    )
+
+    data class LifecycleInfo(
+        val disabled: Boolean,
+        val status: String,
+        val days: Int?,
+        val hours: Int?,
+        val minutes: Int?,
+        val seconds: Int?,
+        val secondsRemaining: Long?,
+        val canConfirm: Boolean,
+        val timeframeDays: Int,
+    )
+
+    data class RunnerStart(
+        val roundToken: String,
+        val timeSessionsRemaining: Int,
+        val hourlyUsed: Int,
+        val hourlyMax: Int,
+        val dailyUsed: Int,
+        val dailyMax: Int,
+    )
+
+    data class RunnerFinish(
+        val tokensWon: Int,
+        val scoreTokens: Int,
+        val timeReward: Int,
+        val score: Int,
+        val elapsed: Int,
+        val balance: Int,
+        val timeSessionsRemaining: Int,
+    )
+
+    data class NodeEndpoint(
+        val name: String,
+        val url: String,
+    )
+
+    data class NodeStatus(
+        val name: String,
+        val url: String,
+        val isOnline: Boolean,
+    )
+
     data class Dashboard(
         val account: Account?,
         val servers: List<Server>,
+    )
+
+    private val NODE_ENDPOINTS = listOf(
+        NodeEndpoint("Great British Node", "https://node.monkey-network.xyz:8080/api/system"),
+        NodeEndpoint("EU NODE", "https://eu.monkey-network.xyz:8080/api/system"),
+        NodeEndpoint("USA Node", "https://usa.monkey-network.xyz:8080/api/system"),
     )
 
     fun login(user: String, password: String): ApiResult<String> {
@@ -93,6 +158,19 @@ object PanelApi {
         )
     }
 
+    fun publicStatus(): ApiResult<List<NodeStatus>> {
+        val statuses = NODE_ENDPOINTS.map { endpoint ->
+            NodeStatus(
+                name = endpoint.name,
+                url = endpoint.url,
+                isOnline = isHttpReachable(endpoint.url),
+            )
+        }
+        return ApiResult(statuses)
+    }
+
+    fun panelOnline(): Boolean = isHttpReachable(BASE)
+
     fun powerAction(ctx: Context, serverId: String, signal: String): ApiResult<Unit> {
         val apiToken = AppPrefs.apiToken(ctx) ?: return ApiResult(error = "Sign in first.")
         return requestUnit(
@@ -103,6 +181,69 @@ object PanelApi {
         )
     }
 
+    fun consoleWebsocket(ctx: Context, serverId: String): ApiResult<ConsoleWebsocket> {
+        val apiToken = AppPrefs.apiToken(ctx) ?: return ApiResult(error = "Sign in first.")
+        val response = requestJson("GET", "$BASE/api/client/servers/$serverId/websocket", apiToken)
+        if (!response.isOk) return ApiResult(error = response.error)
+        val attrs = response.value?.optJSONObject("data")
+            ?: return ApiResult(error = "Console connection details were not returned.")
+        val socket = attrs.optString("socket")
+        val token = attrs.optString("token")
+        return if (socket.isBlank() || token.isBlank()) {
+            ApiResult(error = "Console connection details were incomplete.")
+        } else {
+            ApiResult(ConsoleWebsocket(socket, token))
+        }
+    }
+
+    fun startup(ctx: Context, serverId: String): ApiResult<StartupInfo> {
+        val apiToken = AppPrefs.apiToken(ctx) ?: return ApiResult(error = "Sign in first.")
+        val response = requestJson("GET", "$BASE/api/client/servers/$serverId/startup", apiToken)
+        if (!response.isOk) return ApiResult(error = response.error)
+        val json = response.value ?: return ApiResult(error = "Startup details were not returned.")
+        val meta = json.optJSONObject("meta") ?: JSONObject()
+        val data = json.optJSONArray("data") ?: JSONArray()
+        val variables = buildList {
+            for (i in 0 until data.length()) {
+                val attrs = data.optJSONObject(i)?.optJSONObject("attributes") ?: continue
+                add(
+                    StartupVariable(
+                        name = attrs.optString("name"),
+                        envVariable = attrs.optString("env_variable"),
+                        value = attrs.optString("server_value"),
+                    )
+                )
+            }
+        }
+        return ApiResult(
+            StartupInfo(
+                startupCommand = meta.optString("startup_command"),
+                rawStartupCommand = meta.optString("raw_startup_command"),
+                variables = variables,
+            )
+        )
+    }
+
+    fun lifecycle(ctx: Context, serverId: String): ApiResult<LifecycleInfo> {
+        val apiToken = AppPrefs.apiToken(ctx) ?: return ApiResult(error = "Sign in first.")
+        val response = requestJson("GET", "$BASE/api/client/servers/$serverId/lifecycle", apiToken)
+        if (!response.isOk) return ApiResult(error = response.error)
+        val json = response.value ?: return ApiResult(error = "Lifecycle details were not returned.")
+        return ApiResult(
+            LifecycleInfo(
+                disabled = json.optBoolean("disabled"),
+                status = json.optString("status", "unknown"),
+                days = nullableInt(json, "days"),
+                hours = nullableInt(json, "hours"),
+                minutes = nullableInt(json, "minutes"),
+                seconds = nullableInt(json, "seconds"),
+                secondsRemaining = nullableLong(json, "seconds_remaining"),
+                canConfirm = json.optBoolean("can_confirm"),
+                timeframeDays = json.optInt("timeframe_days", 14),
+            )
+        )
+    }
+
     fun registerPushToken(ctx: Context, fcmToken: String): Boolean {
         val apiToken = AppPrefs.apiToken(ctx) ?: return false
         return request(
@@ -110,6 +251,46 @@ object PanelApi {
             "$BASE/api/client/account/push-tokens",
             apiToken,
             JSONObject().put("token", fcmToken).put("platform", "android"),
+        )
+    }
+
+    fun runnerStart(ctx: Context): ApiResult<RunnerStart> {
+        val apiToken = AppPrefs.apiToken(ctx) ?: return ApiResult(error = "Sign in first.")
+        val response = requestJson("POST", "$BASE/api/client/account/runner/start", apiToken, JSONObject())
+        if (!response.isOk) return ApiResult(error = response.error)
+        val json = response.value ?: return ApiResult(error = "No response from server.")
+        val limits = json.optJSONObject("limits") ?: JSONObject()
+        return ApiResult(
+            RunnerStart(
+                roundToken = json.optString("round_token"),
+                timeSessionsRemaining = json.optInt("time_sessions_remaining"),
+                hourlyUsed = limits.optInt("hourly_used"),
+                hourlyMax = limits.optInt("hourly_max"),
+                dailyUsed = limits.optInt("daily_used"),
+                dailyMax = limits.optInt("daily_max"),
+            )
+        )
+    }
+
+    fun runnerFinish(ctx: Context, roundToken: String, score: Int, coins: Int): ApiResult<RunnerFinish> {
+        val apiToken = AppPrefs.apiToken(ctx) ?: return ApiResult(error = "Sign in first.")
+        val body = JSONObject()
+            .put("round_token", roundToken)
+            .put("score", score)
+            .put("coins", coins)
+        val response = requestJson("POST", "$BASE/api/client/account/runner/finish", apiToken, body)
+        if (!response.isOk) return ApiResult(error = response.error)
+        val json = response.value ?: return ApiResult(error = "No response from server.")
+        return ApiResult(
+            RunnerFinish(
+                tokensWon = json.optInt("tokens_won"),
+                scoreTokens = json.optInt("score_tokens"),
+                timeReward = json.optInt("time_reward"),
+                score = json.optInt("score"),
+                elapsed = json.optInt("elapsed"),
+                balance = json.optInt("balance"),
+                timeSessionsRemaining = json.optInt("time_sessions_remaining"),
+            )
         )
     }
 
@@ -143,6 +324,32 @@ object PanelApi {
             Log.e("PanelApi", "request failed", e)
             false
         }
+    }
+
+    private fun isHttpReachable(urlStr: String): Boolean {
+        return try {
+            val conn = (URL(urlStr).openConnection() as HttpURLConnection).apply {
+                requestMethod = "GET"
+                instanceFollowRedirects = false
+                connectTimeout = 6_000
+                readTimeout = 6_000
+                setRequestProperty("Accept", "application/json")
+            }
+            val code = conn.responseCode
+            conn.disconnect()
+            code in 200..499
+        } catch (e: Exception) {
+            Log.w("PanelApi", "status check failed for $urlStr", e)
+            false
+        }
+    }
+
+    private fun nullableInt(json: JSONObject, key: String): Int? {
+        return if (json.isNull(key) || !json.has(key)) null else json.optInt(key)
+    }
+
+    private fun nullableLong(json: JSONObject, key: String): Long? {
+        return if (json.isNull(key) || !json.has(key)) null else json.optLong(key)
     }
 
     private fun getAccount(apiToken: String): ApiResult<Account> {

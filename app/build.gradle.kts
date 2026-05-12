@@ -11,8 +11,8 @@ android {
         applicationId = "com.monkeybytes.app"
         minSdk = 23
         targetSdk = 36
-        versionCode = 11
-        versionName = "0.11.6-alpha"
+        versionCode = 14
+        versionName = "0.12.7-beta"
     }
 
     signingConfigs {
@@ -48,6 +48,7 @@ dependencies {
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("androidx.biometric:biometric:1.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
     implementation("com.google.firebase:firebase-messaging")
