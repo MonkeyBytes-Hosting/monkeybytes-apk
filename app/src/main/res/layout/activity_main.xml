@@ -13,7 +13,7 @@
         android:clipToPadding="false"
         android:fillViewport="true"
         android:overScrollMode="never"
-        android:paddingBottom="88dp">
+        android:paddingBottom="24dp">
 
         <LinearLayout
             android:id="@+id/home_content"
@@ -71,79 +71,102 @@
                             android:textColor="#B7C0D6"
                             android:textSize="14sp" />
                     </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_refresh_status"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:contentDescription="Refresh status"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:padding="0dp"
+                        app:backgroundTint="#1A2230"
+                        app:cornerRadius="22dp"
+                        app:icon="@drawable/ic_refresh"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconSize="20dp"
+                        app:iconTint="#D3DAEA"
+                        app:rippleColor="#3FA3FF"
+                        app:strokeColor="#334058"
+                        app:strokeWidth="1dp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="74dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_metric_chip"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        android:paddingStart="14dp"
-                        android:paddingEnd="14dp">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Panel"
-                            android:textColor="#8F9AB3"
-                            android:textSize="12sp" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="70dp"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_metric_chip"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp">
 
-                        <TextView
-                            android:id="@+id/panel_status_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Ready"
-                            android:textColor="#FFFFFF"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Panel"
+                                android:textColor="#8F9AB3"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/panel_status_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Ready"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="70dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_metric_chip"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Network"
+                                android:textColor="#8F9AB3"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/network_status_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Live"
+                                android:textColor="#D9FFE5"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="74dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_metric_chip"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        android:paddingStart="14dp"
-                        android:paddingEnd="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Network"
-                            android:textColor="#8F9AB3"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:id="@+id/network_status_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Live"
-                            android:textColor="#D9FFE5"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="74dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginTop="12dp"
                         android:background="@drawable/bg_metric_chip"
                         android:gravity="center_vertical"
                         android:orientation="vertical"
@@ -170,10 +193,41 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/node_status_rows"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/status_last_checked_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Last checked -"
+                        android:textColor="#8F9AB3"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/node_status_toggle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:minWidth="92dp"
+                        android:text="Hide nodes"
+                        android:textColor="#D3DAEA"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/node_status_rows"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/bg_metric_chip"
                     android:orientation="vertical"
                     android:paddingStart="14dp"
@@ -221,50 +275,15 @@
                             android:text="Dashboard" />
 
                         <TextView
+                            android:id="@+id/dashboard_subtitle"
                             style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
-                            android:text="Manage servers and resources" />
+                            android:text="Loading servers..." />
                     </LinearLayout>
 
-                    <TextView
-                        style="@style/TextAppearance.MonkeyBytes.ActionArrow"
-                        android:text="&#8250;" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btn_discord"
-                style="@style/Widget.MonkeyBytes.ActionCard"
-                app:rippleColor="#7F88FF">
-
-                <LinearLayout style="@style/Widget.MonkeyBytes.ActionRow">
-
-                    <FrameLayout
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_icon_discord">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_discord" />
-                    </FrameLayout>
-
-                    <LinearLayout style="@style/Widget.MonkeyBytes.ActionText">
-
-                        <TextView
-                            style="@style/TextAppearance.MonkeyBytes.ActionTitle"
-                            android:text="Discord" />
-
-                        <TextView
-                            style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
-                            android:text="Chat with the community" />
-                    </LinearLayout>
-
-                    <TextView
-                        style="@style/TextAppearance.MonkeyBytes.ActionArrow"
-                        android:text="&#8250;" />
+                    <ImageView
+                        style="@style/Widget.MonkeyBytes.ActionChevron"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -292,90 +311,17 @@
 
                         <TextView
                             style="@style/TextAppearance.MonkeyBytes.ActionTitle"
-                            android:text="Status" />
+                            android:text="Status Page" />
 
                         <TextView
                             style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
-                            android:text="View live network uptime" />
+                            android:text="External network uptime page" />
                     </LinearLayout>
 
-                    <TextView
-                        style="@style/TextAppearance.MonkeyBytes.ActionArrow"
-                        android:text="&#8250;" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btn_reminder"
-                style="@style/Widget.MonkeyBytes.ActionCard"
-                app:rippleColor="#FFB454">
-
-                <LinearLayout style="@style/Widget.MonkeyBytes.ActionRow">
-
-                    <FrameLayout
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_icon_reminder">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_reminder" />
-                    </FrameLayout>
-
-                    <LinearLayout style="@style/Widget.MonkeyBytes.ActionText">
-
-                        <TextView
-                            style="@style/TextAppearance.MonkeyBytes.ActionTitle"
-                            android:text="Reminders" />
-
-                        <TextView
-                            style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
-                            android:text="Schedule a notification" />
-                    </LinearLayout>
-
-                    <TextView
-                        style="@style/TextAppearance.MonkeyBytes.ActionArrow"
-                        android:text="&#8250;" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btn_game"
-                style="@style/Widget.MonkeyBytes.ActionCard"
-                app:rippleColor="#FF6B9D">
-
-                <LinearLayout style="@style/Widget.MonkeyBytes.ActionRow">
-
-                    <FrameLayout
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_icon_security">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="🎮"
-                            android:textSize="22sp" />
-                    </FrameLayout>
-
-                    <LinearLayout style="@style/Widget.MonkeyBytes.ActionText">
-
-                        <TextView
-                            style="@style/TextAppearance.MonkeyBytes.ActionTitle"
-                            android:text="MonkeyRunner" />
-
-                        <TextView
-                            style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
-                            android:text="Play the infinite runner game" />
-                    </LinearLayout>
-
-                    <TextView
-                        style="@style/TextAppearance.MonkeyBytes.ActionArrow"
-                        android:text="&#8250;" />
+                    <ImageView
+                        style="@style/Widget.MonkeyBytes.ActionChevron"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -412,21 +358,176 @@
                             android:text="Biometric, PIN or pattern" />
                     </LinearLayout>
 
-                    <TextView
-                        style="@style/TextAppearance.MonkeyBytes.ActionArrow"
-                        android:text="&#8250;" />
+                    <ImageView
+                        style="@style/Widget.MonkeyBytes.ActionChevron"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btn_reminder"
+                style="@style/Widget.MonkeyBytes.ActionCard"
+                app:rippleColor="#FFB454">
+
+                <LinearLayout style="@style/Widget.MonkeyBytes.ActionRow">
+
+                    <FrameLayout
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_icon_reminder">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_reminder" />
+                    </FrameLayout>
+
+                    <LinearLayout style="@style/Widget.MonkeyBytes.ActionText">
+
+                        <TextView
+                            style="@style/TextAppearance.MonkeyBytes.ActionTitle"
+                            android:text="Reminders" />
+
+                        <TextView
+                            android:id="@+id/reminder_subtitle"
+                            style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
+                            android:text="No reminders scheduled" />
+                    </LinearLayout>
+
+                    <ImageView
+                        style="@style/Widget.MonkeyBytes.ActionChevron"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btn_discord"
+                style="@style/Widget.MonkeyBytes.ActionCard"
+                app:rippleColor="#7F88FF">
+
+                <LinearLayout style="@style/Widget.MonkeyBytes.ActionRow">
+
+                    <FrameLayout
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_icon_discord">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_discord" />
+                    </FrameLayout>
+
+                    <LinearLayout style="@style/Widget.MonkeyBytes.ActionText">
+
+                        <TextView
+                            style="@style/TextAppearance.MonkeyBytes.ActionTitle"
+                            android:text="Discord" />
+
+                        <TextView
+                            style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
+                            android:text="External community invite" />
+                    </LinearLayout>
+
+                    <ImageView
+                        style="@style/Widget.MonkeyBytes.ActionChevron"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btn_game"
+                style="@style/Widget.MonkeyBytes.ActionCard"
+                app:rippleColor="#FF6B9D">
+
+                <LinearLayout style="@style/Widget.MonkeyBytes.ActionRow">
+
+                    <FrameLayout
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_icon_security">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_game" />
+                    </FrameLayout>
+
+                    <LinearLayout style="@style/Widget.MonkeyBytes.ActionText">
+
+                        <TextView
+                            style="@style/TextAppearance.MonkeyBytes.ActionTitle"
+                            android:text="MonkeyRunner" />
+
+                        <TextView
+                            style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
+                            android:text="Play the infinite runner game" />
+                    </LinearLayout>
+
+                    <ImageView
+                        style="@style/Widget.MonkeyBytes.ActionChevron"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"
+                android:letterSpacing="0.08"
+                android:text="ACCOUNT"
+                android:textColor="#8F9AB3"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btn_logout"
+                style="@style/Widget.MonkeyBytes.ActionCard"
+                app:rippleColor="#FF6B6B">
+
+                <LinearLayout style="@style/Widget.MonkeyBytes.ActionRow">
+
+                    <FrameLayout
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_icon_security">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_logout" />
+                    </FrameLayout>
+
+                    <LinearLayout style="@style/Widget.MonkeyBytes.ActionText">
+
+                        <TextView
+                            style="@style/TextAppearance.MonkeyBytes.ActionTitle"
+                            android:text="Logout" />
+
+                        <TextView
+                            style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
+                            android:text="Sign out of this device" />
+                    </LinearLayout>
+
+                    <ImageView
+                        style="@style/Widget.MonkeyBytes.ActionChevron"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </ScrollView>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_logout"
-        style="@style/Widget.MonkeyBytes.LogoutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="18dp"
-        android:text="Logout"
-        app:rippleColor="#FF6B6B" />
 </FrameLayout>

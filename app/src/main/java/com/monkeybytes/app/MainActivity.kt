@@ -32,6 +32,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.monkeybytes.app.databinding.ActivityMainBinding
 import java.util.Calendar
 import java.text.DateFormat
+import java.util.Date
 import java.util.concurrent.Executor
 import kotlin.concurrent.thread
 
@@ -41,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
+    private var nodeRowsExpanded = true
+    private var latestNodes: List<PanelApi.NodeStatus> = emptyList()
 
     private val notifPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -77,8 +80,12 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://status.mbint.dpdns.org/")))
         }
         binding.btnLogout.setOnClickListener {
-            AppPrefs.setApiToken(this, null)
-            recreate()
+            confirmLogout()
+        }
+        binding.btnRefreshStatus.setOnClickListener { refreshPublicStatus() }
+        binding.nodeStatusToggle.setOnClickListener {
+            nodeRowsExpanded = !nodeRowsExpanded
+            applyNodeRowsVisibility()
         }
         binding.btnReminder.setOnClickListener { showReminders() }
 
@@ -92,11 +99,11 @@ class MainActivity : AppCompatActivity() {
         val animatedViews = listOf(
             binding.heroPanel,
             binding.btnDashboard,
-            binding.btnDiscord,
             binding.btnStatus,
-            binding.btnReminder,
-            binding.btnGame,
             binding.btnBiometric,
+            binding.btnReminder,
+            binding.btnDiscord,
+            binding.btnGame,
             binding.btnLogout
         )
         animatedViews.forEach { view ->
@@ -105,12 +112,14 @@ class MainActivity : AppCompatActivity() {
         }
         listOf(
             binding.btnDashboard,
-            binding.btnDiscord,
             binding.btnStatus,
-            binding.btnReminder,
-            binding.btnGame,
             binding.btnBiometric,
-            binding.btnLogout
+            binding.btnReminder,
+            binding.btnDiscord,
+            binding.btnGame,
+            binding.btnLogout,
+            binding.btnRefreshStatus,
+            binding.nodeStatusToggle
         ).forEach(::addPressMotion)
     }
 
@@ -118,11 +127,11 @@ class MainActivity : AppCompatActivity() {
         val animatedViews = listOf(
             binding.heroPanel,
             binding.btnDashboard,
-            binding.btnDiscord,
             binding.btnStatus,
-            binding.btnReminder,
-            binding.btnGame,
             binding.btnBiometric,
+            binding.btnReminder,
+            binding.btnDiscord,
+            binding.btnGame,
             binding.btnLogout
         )
         animatedViews.forEachIndexed { index, view ->
@@ -153,6 +162,56 @@ class MainActivity : AppCompatActivity() {
                     .start()
             }
             false
+        }
+    }
+
+    private fun confirmLogout() {
+        AlertDialog.Builder(this)
+            .setTitle("Logout?")
+            .setMessage("This signs you out on this device.")
+            .setPositiveButton("Logout") { _, _ ->
+                AppPrefs.setApiToken(this, null)
+                recreate()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun refreshMenuContext() {
+        updateReminderSubtitle()
+        refreshDashboardSubtitle()
+    }
+
+    private fun refreshDashboardSubtitle() {
+        if (AppPrefs.apiToken(this) == null) {
+            binding.dashboardSubtitle.text = "Sign in to manage servers"
+            return
+        }
+        binding.dashboardSubtitle.text = "Loading servers..."
+        thread {
+            val result = PanelApi.dashboard(applicationContext)
+            val servers = result.value?.servers.orEmpty()
+            runOnUiThread {
+                binding.dashboardSubtitle.text = if (result.isOk) {
+                    when (servers.size) {
+                        0 -> "No servers available"
+                        1 -> "1 server available"
+                        else -> "${servers.size} servers available"
+                    }
+                } else {
+                    "Manage servers and resources"
+                }
+            }
+        }
+    }
+
+    private fun updateReminderSubtitle() {
+        val nextReminder = AppPrefs.reminders(this)
+            .firstOrNull { it.atMillis >= System.currentTimeMillis() }
+        binding.reminderSubtitle.text = if (nextReminder == null) {
+            "No reminders scheduled"
+        } else {
+            "Next: ${formatShortDateTime(nextReminder.atMillis)}"
         }
     }
 
@@ -197,6 +256,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Delete") { _, _ ->
                 cancelReminder(reminder.id)
                 AppPrefs.deleteReminder(this, reminder.id)
+                updateReminderSubtitle()
                 Toast.makeText(this, "Reminder deleted.", Toast.LENGTH_SHORT).show()
                 showReminders()
             }
@@ -228,6 +288,7 @@ class MainActivity : AppCompatActivity() {
                     if (existing != null) cancelReminder(existing.id)
                     scheduleReminder(id, text, cal.timeInMillis)
                     AppPrefs.saveReminder(this, AppPrefs.Reminder(id, text, cal.timeInMillis))
+                    updateReminderSubtitle()
                     showReminders()
                 }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), false).show()
             }
@@ -507,7 +568,13 @@ class MainActivity : AppCompatActivity() {
         (System.currentTimeMillis() % Int.MAX_VALUE).toInt().coerceAtLeast(1)
 
     private fun formatReminderTime(atMillis: Long): String =
-        DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(atMillis)
+        DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(atMillis))
+
+    private fun formatShortDateTime(atMillis: Long): String =
+        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(atMillis))
+
+    private fun formatShortTime(atMillis: Long): String =
+        DateFormat.getTimeInstance(DateFormat.SHORT).format(Date(atMillis))
 
     private fun setupBiometric() {
         executor = ContextCompat.getMainExecutor(this)
@@ -549,6 +616,7 @@ class MainActivity : AppCompatActivity() {
     private fun onUnlocked() {
         binding.root.visibility = View.VISIBLE
         updateLockSubtitle()
+        refreshMenuContext()
         refreshPublicStatus()
         animateHomeIn()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -567,12 +635,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshPublicStatus() {
-        binding.panelStatusText.text = "Check"
+        binding.panelStatusText.text = "Checking"
         binding.panelStatusText.setTextColor(COLOR_PENDING)
-        binding.networkStatusText.text = "Check"
+        binding.networkStatusText.text = "Checking"
         binding.networkStatusText.setTextColor(COLOR_PENDING)
-        binding.nodesStatusText.text = "Check"
+        binding.nodesStatusText.text = "Checking"
         binding.nodesStatusText.setTextColor(COLOR_PENDING)
+        binding.statusLastCheckedText.text = "Checking now"
+        binding.nodeStatusToggle.visibility = View.GONE
         binding.nodeStatusRows.visibility = View.GONE
         binding.nodeStatusRows.removeAllViews()
 
@@ -583,20 +653,31 @@ class MainActivity : AppCompatActivity() {
             val allNodesOnline = nodes.isNotEmpty() && onlineNodes == nodes.size
 
             runOnUiThread {
-                binding.panelStatusText.text = if (panelOnline) "Ready" else "Offline"
+                latestNodes = nodes
+                binding.panelStatusText.text = if (panelOnline) "Online" else "Offline"
                 binding.panelStatusText.setTextColor(if (panelOnline) COLOR_ONLINE else COLOR_OFFLINE)
                 binding.networkStatusText.text = when {
-                    allNodesOnline -> "Live"
-                    onlineNodes > 0 -> "Partial"
-                    else -> "Down"
+                    nodes.isEmpty() -> "No nodes"
+                    allNodesOnline -> "$onlineNodes/${nodes.size} live"
+                    onlineNodes > 0 -> "$onlineNodes/${nodes.size} partial"
+                    else -> "0/${nodes.size} down"
                 }
                 binding.networkStatusText.setTextColor(when {
                     allNodesOnline -> COLOR_ONLINE
                     onlineNodes > 0 -> COLOR_WARNING
                     else -> COLOR_OFFLINE
                 })
-                binding.nodesStatusText.text = "$onlineNodes/${nodes.size}"
-                binding.nodesStatusText.setTextColor(if (allNodesOnline) COLOR_ONLINE else COLOR_WARNING)
+                binding.nodesStatusText.text = if (nodes.isEmpty()) {
+                    "No nodes"
+                } else {
+                    "$onlineNodes/${nodes.size} online"
+                }
+                binding.nodesStatusText.setTextColor(when {
+                    allNodesOnline -> COLOR_ONLINE
+                    onlineNodes > 0 -> COLOR_WARNING
+                    else -> COLOR_OFFLINE
+                })
+                binding.statusLastCheckedText.text = "Last checked ${formatShortTime(System.currentTimeMillis())}"
                 showNodeStatuses(nodes)
             }
         }
@@ -605,24 +686,36 @@ class MainActivity : AppCompatActivity() {
     private fun showNodeStatuses(nodes: List<PanelApi.NodeStatus>) {
         binding.nodeStatusRows.removeAllViews()
         if (nodes.isEmpty()) {
+            binding.nodeStatusToggle.visibility = View.GONE
             binding.nodeStatusRows.visibility = View.GONE
             return
         }
-        binding.nodeStatusRows.visibility = View.VISIBLE
+        binding.nodeStatusToggle.visibility = View.VISIBLE
         nodes.forEachIndexed { index, node ->
             binding.nodeStatusRows.addView(nodeStatusRow(node), LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(26)
+                dp(34)
             ).apply {
                 if (index > 0) topMargin = dp(6)
             })
         }
+        applyNodeRowsVisibility()
     }
 
     private fun nodeStatusRow(node: PanelApi.NodeStatus): View {
         return LinearLayout(this).apply {
+            isClickable = true
+            isFocusable = true
             gravity = android.view.Gravity.CENTER_VERTICAL
             orientation = LinearLayout.HORIZONTAL
+            setPadding(0, 0, 0, 0)
+            setOnClickListener {
+                Toast.makeText(
+                    this@MainActivity,
+                    "${node.name}: ${if (node.isOnline) "online" else "offline"}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
             addView(View(this@MainActivity).apply {
                 background = GradientDrawable().apply {
                     shape = GradientDrawable.OVAL
@@ -645,6 +738,13 @@ class MainActivity : AppCompatActivity() {
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
             })
         }
+    }
+
+    private fun applyNodeRowsVisibility() {
+        val hasNodes = latestNodes.isNotEmpty()
+        binding.nodeStatusToggle.visibility = if (hasNodes) View.VISIBLE else View.GONE
+        binding.nodeStatusToggle.text = if (nodeRowsExpanded) "Hide nodes" else "Show nodes"
+        binding.nodeStatusRows.visibility = if (hasNodes && nodeRowsExpanded) View.VISIBLE else View.GONE
     }
 
     private fun updateLockSubtitle() {
