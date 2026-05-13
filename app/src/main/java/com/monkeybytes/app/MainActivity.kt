@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, DashboardActivity::class.java))
         }
         binding.btnDiscord.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/kQbasjfGaM")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/s5bEbHycZn")))
         }
         binding.btnStatus.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://status.mbint.dpdns.org/")))
