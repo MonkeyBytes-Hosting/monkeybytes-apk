@@ -13,6 +13,7 @@ object AppPrefs {
     private const val KEY_PIN_HASH = "pin_hash"
     private const val KEY_PATTERN_HASH = "pattern_hash"
     private const val KEY_REMINDERS = "reminders"
+    private const val KEY_DISMISSED_BANNER_ID = "dismissed_banner_id"
 
     data class Reminder(
         val id: Int,
@@ -35,6 +36,13 @@ object AppPrefs {
         prefs(ctx).getString(KEY_FCM_TOKEN_REGISTERED, null)
     fun setLastRegisteredFcmToken(ctx: Context, token: String?) {
         prefs(ctx).edit().putString(KEY_FCM_TOKEN_REGISTERED, token).apply()
+    }
+
+    fun dismissedBannerId(ctx: Context): String? =
+        prefs(ctx).getString(KEY_DISMISSED_BANNER_ID, null)
+
+    fun setDismissedBannerId(ctx: Context, id: String?) {
+        prefs(ctx).edit().putString(KEY_DISMISSED_BANNER_ID, id).apply()
     }
 
     fun hasPin(ctx: Context): Boolean = prefs(ctx).contains(KEY_PIN_HASH)

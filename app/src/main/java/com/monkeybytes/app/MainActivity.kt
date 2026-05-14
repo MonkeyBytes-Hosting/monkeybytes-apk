@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
     private var nodeRowsExpanded = true
     private var latestNodes: List<PanelApi.NodeStatus> = emptyList()
+    private var bannerNotification: PanelApi.NotificationItem? = null
 
     private val notifPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         setupMotion()
         wireMenu()
+        binding.versionFooter.text = versionFooterText()
         setupBiometric()
 
         if (canUseBiometric()) {
@@ -72,6 +74,17 @@ class MainActivity : AppCompatActivity() {
     private fun wireMenu() {
         binding.btnDashboard.setOnClickListener {
             startActivity(Intent(this, DashboardActivity::class.java))
+        }
+        binding.btnNotifications.setOnClickListener {
+            startActivity(Intent(this, NotificationsActivity::class.java))
+        }
+        binding.notificationBanner.setOnClickListener {
+            startActivity(Intent(this, NotificationsActivity::class.java))
+        }
+        binding.notificationBannerClose.setOnClickListener {
+            bannerNotification?.id?.let { id -> AppPrefs.setDismissedBannerId(this, id) }
+            bannerNotification = null
+            binding.notificationBanner.visibility = View.GONE
         }
         binding.btnDiscord.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/s5bEbHycZn")))
@@ -99,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         val animatedViews = listOf(
             binding.heroPanel,
             binding.btnDashboard,
+            binding.btnNotifications,
             binding.btnStatus,
             binding.btnBiometric,
             binding.btnReminder,
@@ -112,6 +126,7 @@ class MainActivity : AppCompatActivity() {
         }
         listOf(
             binding.btnDashboard,
+            binding.btnNotifications,
             binding.btnStatus,
             binding.btnBiometric,
             binding.btnReminder,
@@ -119,7 +134,9 @@ class MainActivity : AppCompatActivity() {
             binding.btnGame,
             binding.btnLogout,
             binding.btnRefreshStatus,
-            binding.nodeStatusToggle
+            binding.nodeStatusToggle,
+            binding.notificationBanner,
+            binding.notificationBannerClose
         ).forEach(::addPressMotion)
     }
 
@@ -127,6 +144,7 @@ class MainActivity : AppCompatActivity() {
         val animatedViews = listOf(
             binding.heroPanel,
             binding.btnDashboard,
+            binding.btnNotifications,
             binding.btnStatus,
             binding.btnBiometric,
             binding.btnReminder,
@@ -180,6 +198,7 @@ class MainActivity : AppCompatActivity() {
     private fun refreshMenuContext() {
         updateReminderSubtitle()
         refreshDashboardSubtitle()
+        refreshNotificationBanner()
     }
 
     private fun refreshDashboardSubtitle() {
@@ -212,6 +231,32 @@ class MainActivity : AppCompatActivity() {
             "No reminders scheduled"
         } else {
             "Next: ${formatShortDateTime(nextReminder.atMillis)}"
+        }
+    }
+
+    private fun refreshNotificationBanner() {
+        binding.notificationBanner.visibility = View.GONE
+        if (AppPrefs.apiToken(this) == null) return
+
+        thread {
+            val result = PanelApi.notifications(applicationContext)
+            val latest = result.value.orEmpty()
+                .firstOrNull { it.kind.equals("announcement", ignoreCase = true) }
+
+            runOnUiThread {
+                if (!result.isOk || latest == null || latest.id == AppPrefs.dismissedBannerId(this)) {
+                    bannerNotification = null
+                    binding.notificationBanner.visibility = View.GONE
+                    return@runOnUiThread
+                }
+
+                bannerNotification = latest
+                binding.notificationBannerTitle.text = latest.title
+                binding.notificationBannerBody.text = latest.body.ifBlank { "Tap to view notifications" }
+                binding.notificationBanner.alpha = 1f
+                binding.notificationBanner.translationY = 0f
+                binding.notificationBanner.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -575,6 +620,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun formatShortTime(atMillis: Long): String =
         DateFormat.getTimeInstance(DateFormat.SHORT).format(Date(atMillis))
+
+    private fun versionFooterText(): String {
+        val info = packageManager.getPackageInfo(packageName, 0)
+        val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            info.longVersionCode.toString()
+        } else {
+            @Suppress("DEPRECATION")
+            info.versionCode.toString()
+        }
+        val versionName = info.versionName ?: ""
+        return "version: $versionCode\n$versionName"
+    }
 
     private fun setupBiometric() {
         executor = ContextCompat.getMainExecutor(this)

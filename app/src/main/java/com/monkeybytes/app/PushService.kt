@@ -49,7 +49,12 @@ class PushService : FirebaseMessagingService() {
             nm.createNotificationChannel(ch)
         }
 
-        val openIntent = Intent(this, DashboardActivity::class.java).apply {
+        val target = if (event.equals("announcement", ignoreCase = true) || event.equals("notification", ignoreCase = true)) {
+            NotificationsActivity::class.java
+        } else {
+            DashboardActivity::class.java
+        }
+        val openIntent = Intent(this, target).apply {
             if (!serverUuid.isNullOrBlank()) putExtra("server_uuid", serverUuid)
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         }
@@ -128,6 +133,8 @@ class PushService : FirebaseMessagingService() {
                 )
             normalized.startsWith("billing.") || normalized in setOf("invoice_due", "payment_failed", "credit_low") ->
                 AlertChannel("mb_billing", "Billing alerts", Color.parseColor("#F4B400"))
+            normalized in setOf("announcement", "notification") ->
+                AlertChannel("mb_announcements", "Announcements", Color.parseColor("#FFB454"))
             else -> AlertChannel("mb_general", "General", Color.parseColor("#1A73E8"))
         }
     }

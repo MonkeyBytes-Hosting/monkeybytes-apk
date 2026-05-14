@@ -104,6 +104,15 @@ object PanelApi {
         val isOnline: Boolean,
     )
 
+    data class NotificationItem(
+        val id: String,
+        val kind: String,
+        val title: String,
+        val body: String,
+        val severity: String,
+        val displayTime: String,
+    )
+
     data class Dashboard(
         val account: Account?,
         val servers: List<Server>,
@@ -170,6 +179,29 @@ object PanelApi {
     }
 
     fun panelOnline(): Boolean = isHttpReachable(BASE)
+
+    fun notifications(ctx: Context): ApiResult<List<NotificationItem>> {
+        val apiToken = AppPrefs.apiToken(ctx) ?: return ApiResult(error = "Sign in first.")
+        val response = requestJson("GET", "$BASE/api/client/notifications", apiToken)
+        if (!response.isOk) return ApiResult(error = response.error)
+        val data = response.value?.optJSONArray("data") ?: JSONArray()
+        val items = buildList {
+            for (i in 0 until data.length()) {
+                val item = data.optJSONObject(i) ?: continue
+                add(
+                    NotificationItem(
+                        id = item.optString("id"),
+                        kind = item.optString("kind", "notification"),
+                        title = item.optString("title", "Notification"),
+                        body = item.optString("body"),
+                        severity = item.optString("severity", "info"),
+                        displayTime = item.optString("display_time"),
+                    )
+                )
+            }
+        }
+        return ApiResult(items)
+    }
 
     fun powerAction(ctx: Context, serverId: String, signal: String): ApiResult<Unit> {
         val apiToken = AppPrefs.apiToken(ctx) ?: return ApiResult(error = "Sign in first.")

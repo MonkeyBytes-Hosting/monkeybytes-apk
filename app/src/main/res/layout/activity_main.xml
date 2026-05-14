@@ -237,6 +237,66 @@
                     android:visibility="gone" />
             </LinearLayout>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/notification_banner"
+                style="@style/Widget.MonkeyBytes.ActionCard"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:rippleColor="#FFB454">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <FrameLayout
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/bg_icon_reminder">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_notifications" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/notification_banner_title"
+                            style="@style/TextAppearance.MonkeyBytes.ActionTitle"
+                            android:text="Notification" />
+
+                        <TextView
+                            android:id="@+id/notification_banner_body"
+                            style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
+                            android:maxLines="2"
+                            android:text="Latest announcement" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/notification_banner_close"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:text="x"
+                        android:textColor="#D3DAEA"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -278,6 +338,44 @@
                             android:id="@+id/dashboard_subtitle"
                             style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
                             android:text="Loading servers..." />
+                    </LinearLayout>
+
+                    <ImageView
+                        style="@style/Widget.MonkeyBytes.ActionChevron"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btn_notifications"
+                style="@style/Widget.MonkeyBytes.ActionCard"
+                app:rippleColor="#FFB454">
+
+                <LinearLayout style="@style/Widget.MonkeyBytes.ActionRow">
+
+                    <FrameLayout
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_icon_reminder">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_notifications" />
+                    </FrameLayout>
+
+                    <LinearLayout style="@style/Widget.MonkeyBytes.ActionText">
+
+                        <TextView
+                            style="@style/TextAppearance.MonkeyBytes.ActionTitle"
+                            android:text="Notifications" />
+
+                        <TextView
+                            style="@style/TextAppearance.MonkeyBytes.ActionSubtitle"
+                            android:text="Announcements and account activity" />
                     </LinearLayout>
 
                     <ImageView
@@ -528,6 +626,19 @@
                         android:src="@drawable/ic_chevron_right" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/version_footer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/bg_version_badge"
+                android:gravity="center"
+                android:lineSpacingExtra="2dp"
+                android:text="version: 15\n0.15.6-beta"
+                android:textColor="#8F9AB3"
+                android:textSize="12sp" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
